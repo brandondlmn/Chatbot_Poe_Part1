@@ -89,14 +89,14 @@ example of the chatbot interaction flow
 =================================================================
 Chatbot AI -> Please enter your name:
 =================================================================
-user -> Alice
-ChatBot AI-> I have saved your name as Alice
+user -> Brandon
+ChatBot AI-> I have saved your name as Brandon
 Please enter your favourite cybersecurity tip:
 user -> Use strong passwords
 =================================================================
 Would you like to see your details (yes/no) 
 Alice -> yes
-Your full name is Alice
+Your full name is Brandon
 Your favourite cybersecurity fact is Use strong passwords
 3. Question Answering
 Valid Questions:
@@ -149,13 +149,13 @@ Example of the session
 Welcome to the Cyber Security Awareness Bot
 
 Chatbot AI -> Please enter your name:
-user -> Bob
-ChatBot AI-> I have saved your name as Bob
+user -> Brandon
+ChatBot AI-> I have saved your name as Brandon
 Please enter your favourite cybersecurity tip:
 user -> Enable 2FA
 =================================================================
 1. View details | 2. Ask questions | 3. Exit
-Bob -> 2
+Brandon -> 2
 
 ChatBot AI -> You can ask me about:
 1. Password safety
