@@ -36,7 +36,7 @@
 # For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
 # refer to https://github.com/microsoft/github-actions-for-desktop-apps
 
-name: .NET Core Desktop
+name: .NET Core Desktop CI
 
 on:
   push:
@@ -46,45 +46,31 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
-        dotnet-version: [ '6.0.400', '7.0.300' ]  # Explicit versions
-
     runs-on: windows-latest
-
+    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+    - uses: actions/checkout@v4
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: ${{ matrix.dotnet-version }}
+        dotnet-version: 6.0.x
 
-    - name: List project files (Debug)
-      run: dir  # Windows (use `ls` for Linux)
-
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Build
-      run: dotnet build --configuration ${{ matrix.configuration }} --no-restore
-
-    # Skip tests if none exist
-    - name: Test
-      if: false  # Set to `true` if you have tests
-      run: dotnet test --no-build --verbosity normal
-
-    - name: Verify required files
+    - name: Verify files
       run: |
-        if (-not (Test-Path -Path "greeting.wav")) { 
+        if (-not (Test-Path "Chatbot_Poe_Part1/greeting.wav")) { 
           Write-Error "Missing greeting.wav!" 
           exit 1 
         }
-        if (-not (Test-Path -Path "chat.jpeg")) { 
+        if (-not (Test-Path "Chatbot_Poe_Part1/chat.jpeg")) { 
           Write-Error "Missing chat.jpeg!" 
           exit 1 
         }
+
+    - name: Restore dependencies
+      working-directory: Chatbot_Poe_Part1
+      run: dotnet restore
+
+    - name: Build
+      working-directory: Chatbot_Poe_Part1
+      run: dotnet build --configuration Release --no-restore
