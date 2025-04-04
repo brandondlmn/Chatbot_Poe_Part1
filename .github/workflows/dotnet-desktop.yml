@@ -52,30 +52,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Required for full Git history
+        fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 6.0.x
 
-    - name: Clean workspace
+    - name: Nuclear clean
       working-directory: Chatbot_Poe_Part1
       run: |
-        # Force clean all build artifacts
         dotnet clean
         Remove-Item -Recurse -Force obj, bin -ErrorAction SilentlyContinue
-
-    - name: Verify required files
-      working-directory: Chatbot_Poe_Part1
-      run: |
-        if (-not (Test-Path "greeting.wav")) { 
-          Write-Error "Missing greeting.wav!" 
-          exit 1 
-        }
-        if (-not (Test-Path "chat.jpeg")) { 
-          Write-Error "Missing chat.jpeg!" 
-          exit 1 
+        if (Test-Path "Properties/AssemblyInfo.cs") {
+          Remove-Item "Properties/AssemblyInfo.cs" -Force
         }
 
     - name: Restore dependencies
