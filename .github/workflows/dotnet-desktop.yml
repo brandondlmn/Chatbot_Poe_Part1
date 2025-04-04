@@ -36,25 +36,28 @@
 # For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
 # refer to https://github.com/microsoft/github-actions-for-desktop-apps
 
-name: CI
+name: .NET Core Desktop
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
-  build-and-test:
-    runs-on: ${{ matrix.os }}
+  build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]  # Test on both OSes
-        dotnet-version: [ '6.0.x', '7.0.x' ]  # Specify .NET versions
+        configuration: [Debug, Release]  # Build both configurations
+        dotnet-version: [ '6.0.x', '7.0.x' ]  # Test against multiple .NET versions
+
+    runs-on: windows-latest  # Required for desktop apps (SoundPlayer, etc.)
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Required for full Git history (if needed)
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -65,7 +68,30 @@ jobs:
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration ${{ matrix.configuration }} --no-restore
 
     - name: Test (if tests exist)
       run: dotnet test --no-build --verbosity normal
+
+    # Optional: Validate required files (greeting.wav, chat.jpeg)
+    - name: Check for required files
+      run: |
+        if (-not (Test-Path -Path "greeting.wav")) { 
+          Write-Error "greeting.wav not found in root directory!" 
+          exit 1 
+        }
+        if (-not (Test-Path -Path "chat.jpeg")) { 
+          Write-Error "chat.jpeg not found in root directory!" 
+          exit 1 
+        }
+
+    # Upload build artifacts (optional)
+    - name: Upload artifacts
+      if: matrix.configuration == 'Release'  # Only upload Release builds
+      uses: actions/upload-artifact@v4
+      with:
+        name: ChatBot-Binaries-${{ matrix.dotnet-version }}
+        path: |
+          bin/Release/net${{ matrix.dotnet-version }}/**/*
+          greeting.wav
+          chat.jpeg
